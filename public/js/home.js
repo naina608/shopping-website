@@ -87,6 +87,7 @@ function checklogin(){
         location.replace('/login?#');
     }
 }
+// document.getElementsByClassName
 var cart=localStorage.getItem("cart");
 if(cart==''){
     cart=[];
