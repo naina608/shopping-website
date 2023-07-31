@@ -123,7 +123,7 @@ app.post('/stripecheckout', async (req, res) => {
         line_items: req.body.items.map(item => {
             return {
                price_data: {
-                   currency: "usd",
+                   currency: "inr",
                    product_data: {
                     name: item.name,
                     description: item.description,
