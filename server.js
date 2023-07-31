@@ -29,6 +29,7 @@ const app=express();
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cors());
 app.use(express.static("public"));//so that we can access all public data
+// app.use( express.raw({type: 'application/json'}));
 app.use(express.json());//enable form sharing
 app.get('/',(req,res)=>{
     res.sendFile("index.html",{root:"public"});
@@ -112,8 +113,9 @@ app.post('/login',(req,res)=>{
 app.get('/checkout',(req,res)=>{
     res.sendFile("checkout.html",{root:'public'});
 });
+let Domain=process.env.Domain;
+// console.log(Domain);
 let stripeGateway=stripe(process.env.stripe_key);
-let Domain=process.env.DOMAIN;
 app.post('/stripecheckout', async (req, res) => {
     const session = await stripeGateway.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -123,7 +125,7 @@ app.post('/stripecheckout', async (req, res) => {
         line_items: req.body.items.map(item => {
             return {
                price_data: {
-                   currency: "usd",
+                   currency: "inr",
                    product_data: {
                     name: item.name,
                     description: item.description,
@@ -137,35 +139,6 @@ app.post('/stripecheckout', async (req, res) => {
     })
 
     res.json(session.url);
-});
-//webhook
-const endpointSecret = process.env.secret_key;
-
-app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
-  const sig = request.headers['stripe-signature'];
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  } catch (err) {
-    response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntentSucceeded = event.data.object;
-      // Then define and call a function to handle the event payment_intent.succeeded
-      break;
-    // ... handle other event types
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  // Return a 200 response to acknowledge receipt of the event
-  response.send();
 });
 app.get('/success', async (req, res) => {
     let { order, session_id } = req.query;

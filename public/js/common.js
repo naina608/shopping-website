@@ -17,7 +17,6 @@ const sendData=(path,data)=>{
      .then(data=>processData(data));
 }
 const processData=(data)=>{
-    console.log(data);
     if(data.alert){
         showError(data.alert);
     }

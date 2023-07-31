@@ -20,7 +20,7 @@ checkout.addEventListener('click',()=>{
     let address=getAddress();
     //send data to backend
     if(!address.length){
-    fetch('/stripecheckout',{
+        fetch('/stripecheckout',{
         method:'post',
         headers:new Headers({'Content-Type':'application/json'}),
         body:JSON.stringify({
